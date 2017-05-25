@@ -44,8 +44,9 @@ public class ElectoralRegister {
         }
     }
 
-    public Response invokeNewElections(ImACandidate imACandidate) {
-        return null;
+    public void invokeNewElections(ImACandidate imACandidate) {
+        final Candidate candidate = imACandidate.get();
+        this.context.getCluster().announce(candidate).onlyCadidatesWhenScoreGreaterThan(my(candidate.getScore()));
     }
 
 

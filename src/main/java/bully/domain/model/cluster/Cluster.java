@@ -1,29 +1,50 @@
 package bully.domain.model.cluster;
 
 
+import bully.domain.model.comunication.Responses;
 import bully.domain.model.machine.Candidate;
 import bully.domain.model.machine.Leader;
+import bully.domain.model.machine.Machine;
+import bully.domain.model.machine.Machines;
 import bully.domain.service.language.AnnounceNewLeaderService;
 import bully.domain.service.language.BelovedLeader;
 import bully.domain.service.language.CandidatesScoreGreaterService;
+import bully.domain.service.language.MyScore;
+
+import static bully.domain.service.language.From.from;
 
 public class Cluster {
 
-    private Leader leader;
+    private static Leader leader;
+    private static final Machines machines = new Machines();
+
+    static {
+        leader = Leader.dead();
+    }
 
     public CandidatesScoreGreaterService announce(Candidate candidate) {
-        return myScore -> {
-
+        return (MyScore myScore) -> {
+            final Machines strongs = machines.getWithScoreGreaterThan(myScore.getScore());
+            final Responses responses = strongs.announceCandidacy(from(candidate));
+            if (!responses.nobodyRepliedMe()) {
+                BelovedLeader belovedLeader = new BelovedLeader(candidate);
+                youHaveANew(belovedLeader);
+            }
         };
     }
 
-    public AnnounceNewLeaderService youHaveANew(BelovedLeader leader) {
+    public AnnounceNewLeaderService youHaveANew(BelovedLeader belovedLeader) {
         return () -> {
-            this.leader = leader.getMachine();
+            this.leader = Leader.toLeader(belovedLeader.getMachine());
+            machines.announceTheNewBeloved(leader);
         };
     }
 
     public Leader tellMeWhoIsYourLeader() {
         return leader;
+    }
+
+    public void addMachine(Machine machine) {
+        machines.add(machine);
     }
 }

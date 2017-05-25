@@ -44,8 +44,6 @@ public class Machine {
         } else {
             electoralRegister.invokeNewElections(imACandidate(this));
         }
-
-
     }
 
 
