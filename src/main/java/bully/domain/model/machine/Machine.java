@@ -4,8 +4,10 @@ package bully.domain.model.machine;
 import bully.domain.model.cluster.Cluster;
 import bully.domain.model.electoral.Context;
 import bully.domain.model.electoral.ElectoralRegister;
+import bully.domain.service.language.ImACandidate;
 
 import static bully.domain.model.comunication.Response.waitingElectionResult;
+import static bully.domain.service.language.ImACandidate.imACandidate;
 
 public class Machine {
 
@@ -40,7 +42,7 @@ public class Machine {
         if (leader.belovedLeaderYouAreAlive()) {
             //ifImTheBelovedLeader(this).execute
         } else {
-            electoralRegister.invokeNewElections();
+            electoralRegister.invokeNewElections(imACandidate(this));
         }
 
 
