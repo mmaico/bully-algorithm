@@ -40,7 +40,7 @@ public class Cluster {
         };
     }
 
-    public Leader tellMeWhoIsYourLeader() {
+    public Leader takeMeToYourLeader() {
         return leader;
     }
 

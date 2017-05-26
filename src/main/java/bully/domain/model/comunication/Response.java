@@ -38,4 +38,8 @@ public class Response {
     public static Response forgetManMyCandidateIsBadassThanYou() {
         return new Response();
     }
+
+    public static Response ok () {
+        return new Response("OK");
+    }
 }

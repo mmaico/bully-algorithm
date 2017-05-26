@@ -36,7 +36,7 @@ public class Machines extends CollectionBehavior<Machine> {
   }
 
   public Responses announceCandidacy(From from) {
-
+    System.out.println("################# " + from + " announce candidacy ");
     final Set<Response> responses = machines.stream()
         .map(machine -> repository.announcyCandidacy(from, to(machine)))
         .collect(Collectors.toSet());

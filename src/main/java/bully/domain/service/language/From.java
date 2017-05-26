@@ -14,4 +14,10 @@ public class From {
   public static From from(Candidate candidate) {
     return new From(candidate);
   }
+
+  @Override public String toString() {
+    return "From{" +
+        "candidate=" + candidate.getAlias() +
+        '}';
+  }
 }

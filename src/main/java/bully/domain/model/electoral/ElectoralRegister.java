@@ -45,7 +45,10 @@ public class ElectoralRegister {
     }
 
     public void invokeNewElections(ImACandidate imACandidate) {
+        this.state = WE_ARE_IN_ELECTION;
+        System.out.println("####### Election: " + this.context.getMachine().getAlias() + " " + this.state);
         final Candidate candidate = imACandidate.get();
+
         this.context.getCluster().announce(candidate).onlyCadidatesWhenScoreGreaterThan(my(candidate.getScore()));
     }
 
