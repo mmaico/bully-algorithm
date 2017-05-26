@@ -6,9 +6,9 @@ import bully.domain.model.machine.Candidate;
 import bully.domain.model.machine.Leader;
 import bully.domain.model.machine.Machine;
 import bully.domain.model.machine.Machines;
-import bully.domain.service.language.AnnounceNewLeaderService;
+import bully.domain.service.AnnounceNewLeaderService;
 import bully.domain.service.language.BelovedLeader;
-import bully.domain.service.language.CandidatesScoreGreaterService;
+import bully.domain.service.CandidatesScoreGreaterService;
 import bully.domain.service.language.MyScore;
 
 import static bully.domain.service.language.From.from;

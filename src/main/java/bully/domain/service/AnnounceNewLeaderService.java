@@ -1,4 +1,4 @@
-package bully.domain.service.language;
+package bully.domain.service;
 
 @FunctionalInterface
 public interface AnnounceNewLeaderService {
