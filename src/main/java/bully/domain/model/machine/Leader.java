@@ -3,12 +3,12 @@ package bully.domain.model.machine;
 
 public class Leader extends Machine {
 
-    public Leader(String ip, int port, long score) {
-        super(ip, port, score);
+    public Leader(String id, String ip, int port, long score) {
+        super(id, ip, port, score);
     }
 
     public static Leader toLeader(Machine machine) {
-        return new Leader(machine.getIp(), machine.getPort(), machine.getScore());
+        return new Leader(machine.getId(), machine.getIp(), machine.getPort(), machine.getScore());
     }
 
     public Boolean belovedLeaderYouAreAlive() {
@@ -16,7 +16,8 @@ public class Leader extends Machine {
     }
 
     public static Leader dead() {
-        return new Leader("", 0, 0);
+        return new Leader("","", 0, 0);
     }
+
 
 }

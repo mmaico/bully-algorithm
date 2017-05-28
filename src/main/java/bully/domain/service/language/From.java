@@ -15,6 +15,10 @@ public class From {
     return new From(candidate);
   }
 
+  public Candidate getCandidate() {
+    return candidate;
+  }
+
   @Override public String toString() {
     return "From{" +
         "candidate=" + candidate.getAlias() +

@@ -13,7 +13,7 @@ public class ImACandidate {
     }
 
     public Candidate get() {
-        return new Candidate(machine.getIp(), machine.getPort(), machine.getScore(), machine.getAlias());
+        return new Candidate(machine.getId(), machine.getIp(), machine.getPort(), machine.getScore(), machine.getAlias());
     }
 
     public static ImACandidate imACandidate(Machine machine) {

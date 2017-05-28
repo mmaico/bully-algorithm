@@ -16,25 +16,25 @@ public class Context {
 
     private final Cluster cluster;
     private final Machine machine;
-    private final ElectoralRegister electoralRegister;
+    private final ElectoralZone electoralZone;
     private final FollowerTaskService followerTaskService;
     private final LeaderTaskService leaderTaskService;
     private final ReceivedMessagesService receivedMessagesService;
 
-    public Context(Cluster cluster, int port, String alias) {
-        this.cluster = cluster;
+    public Context(int port, String alias) {
+        this.cluster = new Cluster(this);
         this.machine = new Machine(port, alias, this);
-        this.electoralRegister = new ElectoralRegister(this);
+        this.electoralZone = new ElectoralZone(this);
         this.followerTaskService = new FollowerTaskServiceDefaultImpl();
         this.leaderTaskService = new LeaderTaskServiceDefaultImpl();
         this.receivedMessagesService = new ReceivedMessageServiceImpl(this);
         new TCPServer(receivedMessagesService).initServer(port);
     }
 
-    public Context(Cluster cluster, int port, String alias, FollowerTaskService followerTaskService, LeaderTaskService leaderTaskService) {
-        this.cluster = cluster;
+    public Context(int port, String alias, FollowerTaskService followerTaskService, LeaderTaskService leaderTaskService) {
+        this.cluster = new Cluster(this);
         this.machine = new Machine(port, alias, this);
-        this.electoralRegister = new ElectoralRegister(this);
+        this.electoralZone = new ElectoralZone(this);
         this.followerTaskService = followerTaskService;
         this.leaderTaskService = leaderTaskService;
         this.receivedMessagesService = new ReceivedMessageServiceImpl(this);
@@ -42,7 +42,7 @@ public class Context {
     }
 
     public Candidate getMyCandidate() {
-        return new Candidate(machine.getIp(), machine.getPort(), machine.getScore(), machine.getAlias());
+        return new Candidate(machine.getId(), machine.getIp(), machine.getPort(), machine.getScore(), machine.getAlias());
     }
 
     public Cluster getCluster() {
@@ -53,8 +53,8 @@ public class Context {
         return machine;
     }
 
-    public ElectoralRegister getElectoralRegister() {
-        return electoralRegister;
+    public ElectoralZone getElectoralZone() {
+        return electoralZone;
     }
 
     public FollowerTaskService getFollowerTaskService() {

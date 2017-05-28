@@ -4,26 +4,22 @@ package bully.infrastructure.server;
 import bully.domain.model.comunication.Request;
 import bully.domain.model.comunication.Response;
 import bully.domain.service.ReceivedMessagesService;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+import sun.misc.IOUtils;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class TCPServer {
 
-  private static final Map<Response.Status, String> statusResponse = new HashMap<>();
 
-  static {
-    statusResponse.put(Response.Status.OK, "HTTP/1.1 200 OK\r\n");
-    statusResponse.put(Response.Status.BAD_REQUEST, "HTTP/1.1 400 Bad Request\r\n");
-    statusResponse.put(Response.Status.INTERNAL_ERROR, "HTTP/1.1 500 Internal Server Error\r\n");
-  }
 
   private final ReceivedMessagesService listener;
 
@@ -32,31 +28,52 @@ public class TCPServer {
   }
 
   public void initServer(int port) {
-    new Thread(() -> {
       try {
-        final ServerSocket socketServer = new ServerSocket(port);
-        while(true) {
-          final Socket connectionSocket = socketServer.accept();
-          final BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-          final DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-          final String body = inFromClient.readLine();
-          final Response response = listener.messageReceived(new Request(body));
-          outToClient.writeBytes(statusResponse.get(response.getStatus()));
-          outToClient.writeBytes("Date: "+new Date()+"\r\n");
-          outToClient.writeBytes("Content-Length: "+ response.getContent().length() + 1 +"\r\n");
+        HttpServer httpServer = HttpServer.create(new InetSocketAddress(port), 0);
+        httpServer.createContext("/", (httpExchange) -> {
+          new Thread(() -> {
+            try {
+              final OutputStream responseBody = httpExchange.getResponseBody();
+              try {
+                final Map<String, String> headers = new HashMap<>();
+                httpExchange.getRequestHeaders().entrySet().forEach(entry ->
+                        headers.put(entry.getKey().toLowerCase(), entry.getValue().get(0))
+                );
 
-          outToClient.writeBytes("Server: Bully Algorithm Server v1.0\r\n");
-          outToClient.writeBytes("Content-Type: text/html; charset=UTF-8\r\n");
+                final Response response = this.listener.messageReceived(new Request("", headers));
+                byte[] responseBytes = "OK".getBytes();
 
-          outToClient.writeBytes(response.getContent());
+                httpExchange.sendResponseHeaders(response.getStatus().getCode(), responseBytes.length);
 
-          outToClient.close();
-        }
-      } catch (Exception e) {
-        System.out.println(e);
+                response.getHeaders().forEach((key, value) -> httpExchange.getResponseHeaders().add(key.toLowerCase(), value));
+                responseBody.write(responseBytes);
+
+              } finally {
+                responseBody.close();
+                httpExchange.close();
+              }
+            } catch (IOException e) {
+              System.out.println("THREAD Error==== " + e);
+            }
+          }).start();
+      });
+      httpServer.start();
+    } catch (Exception e) {
+      System.out.println("Error==== " + e);
+    }
+
+  }
+
+  public static void main(String[] args) {
+    TCPServer tcpServer = new TCPServer(new ReceivedMessagesService() {
+      @Override
+      public Response messageReceived(Request request) {
+        System.out.println("Server listerner");
+        return Response.waitingElectionResult();
       }
-    }).start();
+    });
 
+    tcpServer.initServer(5555);
   }
 
 }

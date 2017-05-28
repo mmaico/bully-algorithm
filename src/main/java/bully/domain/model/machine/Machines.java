@@ -36,7 +36,6 @@ public class Machines extends CollectionBehavior<Machine> {
   }
 
   public Responses announceCandidacy(From from) {
-    System.out.println("################# " + from + " announce candidacy ");
     final Set<Response> responses = machines.stream()
         .map(machine -> repository.announcyCandidacy(from, to(machine)))
         .collect(Collectors.toSet());
@@ -51,6 +50,7 @@ public class Machines extends CollectionBehavior<Machine> {
 
   public Machines getWithScoreGreaterThan(long score) {
     final Set<Machine> machinesScoreGreater = machines.stream()
+         .filter(machine -> machine.getScore() != score)
         .filter(machine -> machine.getScore() > score)
         .collect(Collectors.toSet());
 

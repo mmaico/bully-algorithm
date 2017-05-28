@@ -1,38 +1,45 @@
 package bully.infrastructure.repository;
 
+import bully.domain.model.comunication.Request;
 import bully.domain.model.comunication.Response;
 import bully.domain.model.machine.Leader;
 import bully.domain.model.machine.MachineRepository;
 import bully.domain.service.language.From;
 import bully.domain.service.language.To;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.entity.ContentType;
+import bully.infrastructure.client.Client;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 
-import java.io.IOException;
+import java.util.Optional;
+
+import static bully.domain.model.comunication.Request.RequestEnum.IM_A_CANDIDATE;
 
 
 public class MachineRepositoryTCPImpl implements MachineRepository {
 
+
   @Override
   public Response announcyCandidacy(From from, To to) {
-    String url = "http://" + to.getMachine().getIp() + ":" + to.getMachine().getPort();
-    System.out.println("################# Announce Candidacy" + url);
-    try {
-      org.apache.http.client.fluent.Response teste = Request.Get(url)
-          .connectTimeout(2000)
-          .socketTimeout(2000)
-          .bodyString("teste", ContentType.APPLICATION_JSON)
-          .execute();
-      System.out.println(teste);
-      System.out.println("############### teste");
-    } catch (IOException e) {
-      e.printStackTrace();
+
+    Optional<HttpResponse> httpResponse = Client.post(from.getCandidate(), to, IM_A_CANDIDATE);
+    if (!httpResponse.isPresent()) {
+      return Response.withoutResponse();
     }
-    return Response.ok();
+
+    if (httpResponse.get().getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+      Header result = httpResponse.get().getFirstHeader(Response.KEY);
+      if (result != null) {
+        if (result.getValue().equals(Response.ResponseEnum.IM_BADASS_THAN_YOU.getValue())) {
+          return Response.waitingElectionResult();
+        }
+      }
+    }
+    return Response.withoutResponse();
   }
 
   @Override
   public void announceTheNewBeloved(Leader leader, To to) {
-    System.out.println("################# Announce The New Beloved Leader");
+    Client.post(leader, to, Request.RequestEnum.NEW_LEADER);
   }
 }

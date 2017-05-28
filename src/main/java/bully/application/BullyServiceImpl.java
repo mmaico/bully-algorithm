@@ -1,22 +1,18 @@
 package bully.application;
 
 
-import bully.domain.model.cluster.Cluster;
-import bully.domain.model.comunication.NetworkAddress;
 import bully.domain.model.electoral.Context;
-import bully.domain.model.machine.Machine;
 
-import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class BullyServiceImpl implements BullyFacade {
 
-  private static Context context;
+  private Context context;
   private final Timer timer;
 
-  public BullyServiceImpl(int port, String alias, Cluster cluster) {
-    context = new Context(cluster, port, alias);
+  public BullyServiceImpl(int port, String alias) {
+    context = new Context(port, alias);
     this.timer = new Timer();
   }
 
@@ -29,35 +25,49 @@ public class BullyServiceImpl implements BullyFacade {
 
   }
 
-    public static void main(String[] args) {
-      Cluster cluster = new Cluster();
-      cluster.addMachine(new Machine(NetworkAddress.getIp(), 4444, System.nanoTime()));
-      cluster.addMachine(new Machine(NetworkAddress.getIp(), 5555, System.nanoTime()));
-      cluster.addMachine(new Machine(NetworkAddress.getIp(), 6666, System.nanoTime()));
+  public Context getContext() {
+    return context;
+  }
 
-      new Thread(() -> {
-        BullyServiceImpl bullyService = new BullyServiceImpl(4444, "machine-one", cluster);
-        bullyService.start();
-      }).start();
+  public static void main(String[] args) {
 
-      new Thread(() -> {
-        BullyServiceImpl bullyService = new BullyServiceImpl(5555, "machine-two", cluster);
-        bullyService.start();
-      }).start();
+    BullyServiceImpl bullyServiceOne = new BullyServiceImpl(4444, "machine-one");
+    BullyServiceImpl bullyServiceTwo = new BullyServiceImpl(5555, "machine-two");
+    BullyServiceImpl bullyServiceThree = new BullyServiceImpl(6666, "machine-three");
 
-      new Thread(() -> {
-        BullyServiceImpl bullyService = new BullyServiceImpl(6666, "machine-three", cluster);
-        bullyService.start();
-      }).start();
 
-      while(true) {
-        try {
-          System.out.println("System in Execution...");
-          Thread.sleep(5000);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
+    new Thread(() -> {
+      bullyServiceOne.getContext().getCluster().addMachine(bullyServiceOne.getContext().getMachine());
+      bullyServiceOne.getContext().getCluster().addMachine(bullyServiceTwo.getContext().getMachine());
+      bullyServiceOne.getContext().getCluster().addMachine(bullyServiceThree.getContext().getMachine());
+
+      bullyServiceOne.start();
+    }).start();
+
+    new Thread(() -> {
+      bullyServiceTwo.getContext().getCluster().addMachine(bullyServiceOne.getContext().getMachine());
+      bullyServiceTwo.getContext().getCluster().addMachine(bullyServiceTwo.getContext().getMachine());
+      bullyServiceTwo.getContext().getCluster().addMachine(bullyServiceThree.getContext().getMachine());
+
+      bullyServiceTwo.start();
+    }).start();
+
+    new Thread(() -> {
+      bullyServiceThree.getContext().getCluster().addMachine(bullyServiceOne.getContext().getMachine());
+      bullyServiceThree.getContext().getCluster().addMachine(bullyServiceTwo.getContext().getMachine());
+      bullyServiceThree.getContext().getCluster().addMachine(bullyServiceThree.getContext().getMachine());
+
+      bullyServiceThree.start();
+    }).start();
+
+    while(true) {
+      try {
+        System.out.println("System in Execution...");
+        Thread.sleep(5000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
       }
+    }
 
     }
 

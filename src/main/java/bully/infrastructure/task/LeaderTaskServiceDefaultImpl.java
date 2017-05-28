@@ -8,6 +8,6 @@ public class LeaderTaskServiceDefaultImpl implements LeaderTaskService {
 
   @Override
   public void execute(Context context) {
-    System.out.println("########## ----> Leader task Service");
+    System.out.println("########## ----> Leader task Service: " + context.getMachine().getAlias());
   }
 }

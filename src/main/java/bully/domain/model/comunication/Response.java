@@ -1,18 +1,58 @@
 package bully.domain.model.comunication;
 
 
-public class Response {
+import java.util.HashMap;
+import java.util.Map;
 
-    public enum Status {
-        OK, BAD_REQUEST, INTERNAL_ERROR
+public class Response {
+    public static final String KEY = "response-type";
+
+    public enum ResponseEnum {
+
+        NOT_RECOGNIZED_MACHINE("not-recognized-machine-id"),
+        WITHOUT_RESPONSE("without-response"),
+        IM_BADASS_THAN_YOU("im-badass-than-you"),
+        ILL_WAIT_FOR_THE_RESULT("ill-wait-for-the-result"),
+        WELCOME_MY_BELOVED_LEADER("welcome-my-beloved-leader"),
+        COMMAND_EXECUTING_OK("follower-command-executing-ok"),
+        COMMAND_EXECUTING_ERROR("follower-command-executing-error");
+
+        private String value;
+
+        ResponseEnum(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 
+    public enum Status {
+        OK(200), BAD_REQUEST(400), INTERNAL_ERROR(500);
+        int code;
+        Status(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+    }
+
+    private final Map<String, String> headers = new HashMap<>();
     private String content;
     private Status status = Status.OK;
 
     public Response() {}
     public Response(String content) {
         this.content = content;
+    }
+
+    public Response(ResponseEnum response, Status status) {
+        this.headers.put(KEY, response.value);
+        this.status = status;
+        this.content = "";
     }
 
     public String getContent() {
@@ -32,14 +72,34 @@ public class Response {
     }
 
     public static Response waitingElectionResult() {
-        return new Response();
+        return new Response(ResponseEnum.ILL_WAIT_FOR_THE_RESULT, Status.OK);
     }
 
     public static Response forgetManMyCandidateIsBadassThanYou() {
-        return new Response();
+        return new Response(ResponseEnum.IM_BADASS_THAN_YOU, Status.OK);
     }
 
-    public static Response ok () {
-        return new Response("OK");
+    public static Response withoutResponse() {
+        return new Response(ResponseEnum.WITHOUT_RESPONSE, Status.OK);
+    }
+
+    public static Response notRecognizedMachine() {
+        return new Response(ResponseEnum.NOT_RECOGNIZED_MACHINE, Status.BAD_REQUEST);
+    }
+
+    public static Response welcomeMyBelovedLeader() {
+        return new Response(ResponseEnum.WELCOME_MY_BELOVED_LEADER, Status.OK);
+    }
+
+    public static Response commandExecutingOk() {
+        return new Response(ResponseEnum.COMMAND_EXECUTING_OK, Status.OK);
+    }
+
+    public static Response commandExecutingError() {
+        return new Response(ResponseEnum.COMMAND_EXECUTING_ERROR, Status.OK);
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 }

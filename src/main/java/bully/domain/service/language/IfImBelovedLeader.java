@@ -21,8 +21,7 @@ public class IfImBelovedLeader {
   public void thenExecute(LeaderTaskService leaderTaskService) {
     Cluster cluster = machine.getContext().getCluster();
     Leader leader = cluster.takeMeToYourLeader();
-    if (leader.getIp().equals(this.machine.getIp())
-        && leader.getPort() == this.machine.getPort()) {
+    if (leader.getId().equals(this.machine.getId())) {
       leaderTaskService.execute(this.machine.getContext());
     }
   }
