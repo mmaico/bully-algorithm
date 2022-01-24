@@ -26,7 +26,7 @@ public class ElectoralZone {
 
     public void electionResult(Leader leader) {
         this.state = WE_ARE_NOT_IN_ELECTION;
-        this.context.getCluster().youHaveANew(belovedLeader(leader));
+        this.context.getCluster().youHaveANew(belovedLeader(leader)).announceToCandidatesANewLeader();
     }
 
     public Boolean areYouInElections() {

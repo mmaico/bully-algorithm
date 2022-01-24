@@ -35,9 +35,9 @@ public class Cluster {
             final Machines strongs = machines.getWithScoreGreaterThan(myScore.getScore());
             final Responses responses = strongs.announceCandidacy(from(candidate));
 
-            if (!responses.hasCandidatesBadassThanMe()) {
+            if (strongs.size() == 0 || !responses.hasCandidatesBadassThanMe()) {
                 this.leader = Leader.toLeader(candidate);
-                System.out.println("Im The fucking KING <------ LEADER: " + candidate.getAlias());
+                System.out.println("Im The fucking KING <------ LEADER: " + this.leader.getAlias());
                 this.context.getElectoralZone().electionResult(this.leader);
                 machines.announceTheNewBeloved(leader);
             }

@@ -48,7 +48,7 @@ public class ReceivedMessageServiceImpl implements ReceivedMessagesService {
             return this.context.getElectoralZone().newElections(toCandidate(machine.get()));
         } else if (headerCommand.trim().equalsIgnoreCase(NEW_LEADER.getValue())) {
             final Leader leader = Leader.toLeader(machine.get());
-            System.out.println("<3 S3 My "+ context.getMachine().getAlias() +" new beloved Leader: " + leader.getId());
+            System.out.println("<3 S3 My "+ context.getMachine().getAlias() +" new beloved Leader: " + leader.getAlias());
             this.context.getElectoralZone().electionResult(leader);
 
             return Response.withoutResponse();

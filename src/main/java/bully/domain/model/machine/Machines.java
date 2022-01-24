@@ -7,6 +7,7 @@ import bully.domain.model.comunication.Responses;
 import bully.domain.service.language.From;
 import bully.infrastructure.repository.MachineRepositoryTCPImpl;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,6 +37,7 @@ public class Machines extends CollectionBehavior<Machine> {
   }
 
   public Responses announceCandidacy(From from) {
+
     final Set<Response> responses = machines.stream()
         .map(machine -> repository.announcyCandidacy(from, to(machine)))
         .collect(Collectors.toSet());
@@ -51,7 +53,7 @@ public class Machines extends CollectionBehavior<Machine> {
   public Machines getWithScoreGreaterThan(long score) {
     final Set<Machine> machinesScoreGreater = machines.stream()
          .filter(machine -> machine.getScore() != score)
-        .filter(machine -> machine.getScore() > score)
+        .filter(machine -> machine.getScore() < score)
         .collect(Collectors.toSet());
 
     return new Machines(machinesScoreGreater);

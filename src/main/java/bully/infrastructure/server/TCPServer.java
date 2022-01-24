@@ -4,15 +4,17 @@ package bully.infrastructure.server;
 import bully.domain.model.comunication.Request;
 import bully.domain.model.comunication.Response;
 import bully.domain.service.ReceivedMessagesService;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import sun.misc.IOUtils;
 
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -41,12 +43,12 @@ public class TCPServer {
                 );
 
                 final Response response = this.listener.messageReceived(new Request("", headers));
-                byte[] responseBytes = "OK".getBytes();
-
-                httpExchange.sendResponseHeaders(response.getStatus().getCode(), responseBytes.length);
+                String responseJson = new GsonBuilder().create().toJson(response);
+                httpExchange.sendResponseHeaders(response.getStatus().getCode(), responseJson.getBytes().length);
 
                 response.getHeaders().forEach((key, value) -> httpExchange.getResponseHeaders().add(key.toLowerCase(), value));
-                responseBody.write(responseBytes);
+
+                responseBody.write(responseJson.getBytes(StandardCharsets.UTF_8));
 
               } finally {
                 responseBody.close();

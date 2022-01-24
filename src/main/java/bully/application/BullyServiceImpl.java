@@ -21,7 +21,7 @@ public class BullyServiceImpl implements BullyFacade {
       @Override public void run() {
         context.getMachine().startProcess();
       }
-    }, 0, 5000);
+    }, 0, 1000);
 
   }
 
@@ -35,35 +35,28 @@ public class BullyServiceImpl implements BullyFacade {
     BullyServiceImpl bullyServiceTwo = new BullyServiceImpl(5555, "machine-two");
     BullyServiceImpl bullyServiceThree = new BullyServiceImpl(6666, "machine-three");
 
-
     new Thread(() -> {
-      bullyServiceOne.getContext().getCluster().addMachine(bullyServiceOne.getContext().getMachine());
-      bullyServiceOne.getContext().getCluster().addMachine(bullyServiceTwo.getContext().getMachine());
-      bullyServiceOne.getContext().getCluster().addMachine(bullyServiceThree.getContext().getMachine());
-
-      bullyServiceOne.start();
+      bullyServiceTwo.getContext().getCluster().addMachine(bullyServiceOne.getContext().getMachine());
+      bullyServiceTwo.getContext().getCluster().addMachine(bullyServiceThree.getContext().getMachine());
+      bullyServiceTwo.start();
     }).start();
 
     new Thread(() -> {
-      bullyServiceTwo.getContext().getCluster().addMachine(bullyServiceOne.getContext().getMachine());
-      bullyServiceTwo.getContext().getCluster().addMachine(bullyServiceTwo.getContext().getMachine());
-      bullyServiceTwo.getContext().getCluster().addMachine(bullyServiceThree.getContext().getMachine());
-
-      bullyServiceTwo.start();
+      bullyServiceOne.getContext().getCluster().addMachine(bullyServiceTwo.getContext().getMachine());
+      bullyServiceOne.getContext().getCluster().addMachine(bullyServiceThree.getContext().getMachine());
+      bullyServiceOne.start();
     }).start();
 
     new Thread(() -> {
       bullyServiceThree.getContext().getCluster().addMachine(bullyServiceOne.getContext().getMachine());
       bullyServiceThree.getContext().getCluster().addMachine(bullyServiceTwo.getContext().getMachine());
-      bullyServiceThree.getContext().getCluster().addMachine(bullyServiceThree.getContext().getMachine());
-
       bullyServiceThree.start();
     }).start();
 
     while(true) {
       try {
         System.out.println("System in Execution...");
-        Thread.sleep(5000);
+        Thread.sleep(2000);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }

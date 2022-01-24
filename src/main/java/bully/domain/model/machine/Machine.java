@@ -8,6 +8,7 @@ import bully.domain.model.electoral.Context;
 import bully.domain.model.electoral.ElectoralZone;
 
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static bully.domain.model.comunication.Response.waitingElectionResult;
 import static bully.domain.service.language.IfImBelovedLeader.ifImBelovedLeader;
@@ -43,13 +44,13 @@ public class Machine {
         this.id = UUID.randomUUID().toString();
         this.ip = NetworkAddress.getIp();
         this.port = port;
-        this.score = System.nanoTime();
+        this.score = ThreadLocalRandom.current().nextInt(1, 5 + 1);
         this.alias = alias;
         this.context = context;
     }
 
     public void startProcess() {
-        System.out.println("++++++++++++++ Started: " + this.alias + " id: " + this.id);
+        System.out.println("++++++++++++++ Started: " + this.alias + " id: " + this.id + " score: " + this.score);
         final ElectoralZone electoralZone = this.context.getElectoralZone();
         final Cluster cluster = this.context.getCluster();
 
@@ -61,7 +62,7 @@ public class Machine {
 
         final Leader leader = cluster.takeMeToYourLeader();
         if (leader.belovedLeaderYouAreAlive()) {
-            System.out.println("++++++++++++++  We have a beloved leader: " + leader.getId() + " me: " + this.alias);
+            System.out.println("++++++++++++++" + this.alias + "  We have a beloved leader: " + leader.getId() + " alias: " + leader.getAlias() + " score: " + leader.getScore());
             ifImBelovedLeader(this).thenExecute(this.context.getLeaderTaskService());
         } else {
             System.out.println("++++++++++++++ " + this.alias + " call new elections");
