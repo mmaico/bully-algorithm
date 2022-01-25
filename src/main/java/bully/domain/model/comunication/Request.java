@@ -1,8 +1,11 @@
 package bully.domain.model.comunication;
 
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.util.Arrays.stream;
 
 public class Request {
 
@@ -12,10 +15,11 @@ public class Request {
   private final String body;
 
   public enum RequestEnum {
-
     IM_A_CANDIDATE("im-a-candidate"),
     NEW_LEADER("new-leader"),
-    COMMAND_TO_EXECUTE("follower-command-to-execute");
+    COMMAND_TO_EXECUTE("follower-command-to-execute"),
+    IS_ALIVE("is-alive"),
+    KILL("kill");
 
     private String value;
 
@@ -25,6 +29,14 @@ public class Request {
 
     public String getValue() {
       return value;
+    }
+
+    public static RequestEnum getBy(String value) {
+      return stream(values()).filter(item -> item.value.equalsIgnoreCase(value)).findFirst().get();
+    }
+
+    public static boolean isValid(String command) {
+      return stream(values()).filter(item -> item.value.equalsIgnoreCase(command)).count() > 0;
     }
   }
 
@@ -38,6 +50,9 @@ public class Request {
     this.headers = headers;
   }
 
+  public static Request isAlive() {
+    return new Request(RequestEnum.IS_ALIVE);
+  }
   public static Request imACandidate() {
     return new Request(RequestEnum.IM_A_CANDIDATE);
   }

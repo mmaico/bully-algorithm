@@ -15,7 +15,9 @@ public class Response {
         ILL_WAIT_FOR_THE_RESULT("ill-wait-for-the-result"),
         WELCOME_MY_BELOVED_LEADER("welcome-my-beloved-leader"),
         COMMAND_EXECUTING_OK("follower-command-executing-ok"),
-        COMMAND_EXECUTING_ERROR("follower-command-executing-error");
+        COMMAND_EXECUTING_ERROR("follower-command-executing-error"),
+        IS_ALIVE("is-alive"),
+        IM_DEAD("im-dead-man");
 
         private String value;
 
@@ -29,7 +31,7 @@ public class Response {
     }
 
     public enum Status {
-        OK(200), BAD_REQUEST(400), INTERNAL_ERROR(500);
+        OK(200), BAD_REQUEST(400), INTERNAL_ERROR(500), SERVICE_UNAVAILABLE(503);
         int code;
         Status(int code) {
             this.code = code;
@@ -81,6 +83,14 @@ public class Response {
 
     public static Response withoutResponse() {
         return new Response(ResponseEnum.WITHOUT_RESPONSE, Status.OK);
+    }
+
+    public static Response itsOK() {
+        return new Response(ResponseEnum.IS_ALIVE, Status.OK);
+    }
+
+    public static Response imDead() {
+        return new Response(ResponseEnum.IM_DEAD, Status.SERVICE_UNAVAILABLE);
     }
 
     public static Response notRecognizedMachine() {

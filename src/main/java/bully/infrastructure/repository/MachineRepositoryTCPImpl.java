@@ -3,6 +3,7 @@ package bully.infrastructure.repository;
 import bully.domain.model.comunication.Request;
 import bully.domain.model.comunication.Response;
 import bully.domain.model.machine.Leader;
+import bully.domain.model.machine.Machine;
 import bully.domain.model.machine.MachineRepository;
 import bully.domain.service.language.From;
 import bully.domain.service.language.To;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static bully.domain.model.comunication.Request.RequestEnum.IM_A_CANDIDATE;
+import static bully.domain.service.language.To.to;
 
 
 public class MachineRepositoryTCPImpl implements MachineRepository {
@@ -49,5 +51,12 @@ public class MachineRepositoryTCPImpl implements MachineRepository {
   @Override
   public void announceTheNewBeloved(Leader leader, To to) {
     Client.post(leader, to, Request.RequestEnum.NEW_LEADER);
+  }
+
+  @Override
+  public Boolean isAlive(Machine from, Leader leader) {
+    Optional<HttpResponse> response = Client.post(from, to(leader), Request.RequestEnum.IS_ALIVE);
+    if (!response.isPresent()) return false;
+    return response.get().getStatusLine().getStatusCode() == 200;
   }
 }

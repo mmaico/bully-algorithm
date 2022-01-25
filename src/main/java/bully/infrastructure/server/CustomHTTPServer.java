@@ -4,28 +4,22 @@ package bully.infrastructure.server;
 import bully.domain.model.comunication.Request;
 import bully.domain.model.comunication.Response;
 import bully.domain.service.ReceivedMessagesService;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
-public class TCPServer {
+public class CustomHTTPServer {
 
 
 
   private final ReceivedMessagesService listener;
 
-  public TCPServer(ReceivedMessagesService listener) {
+  public CustomHTTPServer(ReceivedMessagesService listener) {
     this.listener = listener;
   }
 
@@ -64,18 +58,6 @@ public class TCPServer {
       System.out.println("Error==== " + e);
     }
 
-  }
-
-  public static void main(String[] args) {
-    TCPServer tcpServer = new TCPServer(new ReceivedMessagesService() {
-      @Override
-      public Response messageReceived(Request request) {
-        System.out.println("Server listerner");
-        return Response.waitingElectionResult();
-      }
-    });
-
-    tcpServer.initServer(5555);
   }
 
 }

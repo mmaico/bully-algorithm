@@ -13,4 +13,7 @@ public interface MachineRepository {
 
     void announceTheNewBeloved(Leader leader, To to);
 
+    Boolean isAlive(Machine from, Leader leader);
+
+
 }

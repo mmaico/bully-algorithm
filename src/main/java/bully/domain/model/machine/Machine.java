@@ -7,6 +7,8 @@ import bully.domain.model.comunication.Request;
 import bully.domain.model.electoral.Context;
 import bully.domain.model.electoral.ElectoralZone;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -22,6 +24,8 @@ public class Machine {
     private final int port;
     private final String alias;
     private Context context;
+    private Boolean isAlive = true;
+    private final Timer timer;
 
     public Machine(String id, String ip, int port, long score) {
         this.id = id;
@@ -29,6 +33,7 @@ public class Machine {
         this.port = port;
         this.score = score;
         this.alias = "";
+        this.timer = new Timer();
     }
 
     public Machine(String id, String ip, int port, long score, String alias) {
@@ -37,6 +42,7 @@ public class Machine {
         this.port = port;
         this.score = score;
         this.alias = alias;
+        this.timer = new Timer();
     }
 
 
@@ -44,13 +50,26 @@ public class Machine {
         this.id = UUID.randomUUID().toString();
         this.ip = NetworkAddress.getIp();
         this.port = port;
-        this.score = ThreadLocalRandom.current().nextInt(1, 5 + 1);
+        this.score = ThreadLocalRandom.current().nextInt(1, 20);
         this.alias = alias;
         this.context = context;
+        this.timer = new Timer();
+    }
+
+    public void start() {
+        this.timer.schedule(new TimerTask() {
+            @Override public void run() {
+                startProcess();
+            }
+        }, 0, 1000);
     }
 
     public void startProcess() {
         System.out.println("++++++++++++++ Started: " + this.alias + " id: " + this.id + " score: " + this.score);
+        if (!isAlive) {
+            System.out.println("++++++++++++++ I'm Dead: " + this.alias + " id: " + this.id + " score: " + this.score);
+            return;
+        }
         final ElectoralZone electoralZone = this.context.getElectoralZone();
         final Cluster cluster = this.context.getCluster();
 
@@ -61,8 +80,8 @@ public class Machine {
         }
 
         final Leader leader = cluster.takeMeToYourLeader();
-        if (leader.belovedLeaderYouAreAlive()) {
-            System.out.println("++++++++++++++" + this.alias + "  We have a beloved leader: " + leader.getId() + " alias: " + leader.getAlias() + " score: " + leader.getScore());
+        if (leader.belovedLeaderYouAreAlive(this)) {
+            System.out.println("######### for the machine: " + this.alias + "  the beloved leader is: " + leader.getId() + " alias: " + leader.getAlias() + " score: " + leader.getScore());
             ifImBelovedLeader(this).thenExecute(this.context.getLeaderTaskService());
         } else {
             System.out.println("++++++++++++++ " + this.alias + " call new elections");
@@ -94,7 +113,23 @@ public class Machine {
         return context;
     }
 
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
     public String getId() {
         return id;
+    }
+    public void iWantYouToDie() {
+        this.isAlive = false;
+    }
+    public Boolean isAlive() {
+        return isAlive;
+    }
+
+    public static Machine create(int port, String alias) {
+        Machine machine = new Machine(port, alias, null);
+        new Context(port, alias, machine);
+        return machine;
     }
 }

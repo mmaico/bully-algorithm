@@ -33,14 +33,15 @@ public class Cluster {
     public CandidatesScoreGreaterService announce(Candidate candidate) {
         return (MyScore myScore) -> {
             final Machines strongs = machines.getWithScoreGreaterThan(myScore.getScore());
-            final Responses responses = strongs.announceCandidacy(from(candidate));
 
-            if (strongs.size() == 0 || !responses.hasCandidatesBadassThanMe()) {
+            if (strongs.size() == 0) {
                 this.leader = Leader.toLeader(candidate);
-                System.out.println("Im The fucking KING <------ LEADER: " + this.leader.getAlias());
-                this.context.getElectoralZone().electionResult(this.leader);
-                machines.announceTheNewBeloved(leader);
+            } else {
+                this.leader = Leader.toLeader(machines.getHighestScore());
             }
+            System.out.println("Im The fucking KING <------ LEADER: " + this.leader.getAlias());
+            this.context.getElectoralZone().electionResult(this.leader);
+            machines.announceTheNewBeloved(leader);
         };
     }
 
@@ -49,6 +50,10 @@ public class Cluster {
     }
 
     public Optional<Machine> findOne(String id) {
+        if (id == null || id.length() == 0) return Optional.empty();
+        if (this.context.getMachine().getId().equalsIgnoreCase(id)) {
+            return Optional.of(this.context.getMachine());
+        }
         return this.machines.stream()
                 .filter(machine -> machine.getId().equals(id)).findFirst();
     }

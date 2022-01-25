@@ -49,11 +49,18 @@ public class Machines extends CollectionBehavior<Machine> {
     this.machines.stream()
         .forEach(machine -> repository.announceTheNewBeloved(leader, to(machine)));
   }
-
+  public Machine getHighestScore() {
+    Machine machineHighestScore = null;
+    for (Machine item: this.machines) {
+        if (machineHighestScore == null) machineHighestScore = item;
+        if (machineHighestScore.getScore() < item.getScore()) machineHighestScore = item;
+    }
+    return machineHighestScore;
+  }
   public Machines getWithScoreGreaterThan(long score) {
     final Set<Machine> machinesScoreGreater = machines.stream()
-         .filter(machine -> machine.getScore() != score)
-        .filter(machine -> machine.getScore() < score)
+            .filter(Machine::isAlive)
+        .filter(machine -> machine.getScore() > score)
         .collect(Collectors.toSet());
 
     return new Machines(machinesScoreGreater);
