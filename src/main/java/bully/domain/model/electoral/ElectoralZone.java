@@ -4,7 +4,6 @@ package bully.domain.model.electoral;
 import bully.domain.model.comunication.Response;
 import bully.domain.model.machine.Candidate;
 import bully.domain.model.machine.Leader;
-import bully.domain.service.language.BelovedLeader;
 import bully.domain.service.language.ImACandidate;
 
 import static bully.domain.model.comunication.Response.forgetManMyCandidateIsBadassThanYou;
@@ -33,7 +32,7 @@ public class ElectoralZone {
         return this.state == WE_ARE_IN_ELECTION;
     }
 
-    public Response  newElections(Candidate candidate) {
+    public Response newElections(Candidate candidate) {
         this.state = WE_ARE_IN_ELECTION;
 
         final Candidate myCandidate = this.context.getMyCandidate();

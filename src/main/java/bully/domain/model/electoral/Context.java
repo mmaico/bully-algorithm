@@ -21,34 +21,13 @@ public class Context {
     private final LeaderTaskService leaderTaskService;
     private final ReceivedMessagesService receivedMessagesService;
 
-    public Context(int port, String alias) {
-        this.cluster = new Cluster(this);
-        this.machine = new Machine(port, alias, this);
-        this.electoralZone = new ElectoralZone(this);
-        this.followerTaskService = new FollowerTaskServiceDefaultImpl();
-        this.leaderTaskService = new LeaderTaskServiceDefaultImpl();
-        this.receivedMessagesService = new ReceivedMessageServiceImpl(this);
-        new CustomHTTPServer(receivedMessagesService).initServer(port);
-    }
-
-    public Context(int port, String alias, Machine machine) {
+    public Context(int port, Machine machine) {
         this.cluster = new Cluster(this);
         this.machine = machine;
         this.machine.setContext(this);
-        //this.machine = new Machine(port, alias, this);
         this.electoralZone = new ElectoralZone(this);
         this.followerTaskService = new FollowerTaskServiceDefaultImpl();
         this.leaderTaskService = new LeaderTaskServiceDefaultImpl();
-        this.receivedMessagesService = new ReceivedMessageServiceImpl(this);
-        new CustomHTTPServer(receivedMessagesService).initServer(port);
-    }
-
-    public Context(int port, String alias, FollowerTaskService followerTaskService, LeaderTaskService leaderTaskService) {
-        this.cluster = new Cluster(this);
-        this.machine = new Machine(port, alias, this);
-        this.electoralZone = new ElectoralZone(this);
-        this.followerTaskService = followerTaskService;
-        this.leaderTaskService = leaderTaskService;
         this.receivedMessagesService = new ReceivedMessageServiceImpl(this);
         new CustomHTTPServer(receivedMessagesService).initServer(port);
     }

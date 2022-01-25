@@ -11,10 +11,6 @@ public class From {
     this.candidate = candidate;
   }
 
-  public static From from(Candidate candidate) {
-    return new From(candidate);
-  }
-
   public Candidate getCandidate() {
     return candidate;
   }

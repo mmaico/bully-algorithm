@@ -61,16 +61,8 @@ public class Response {
         return content;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public Status getStatus() {
         return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 
     public static Response waitingElectionResult() {
@@ -97,16 +89,8 @@ public class Response {
         return new Response(ResponseEnum.NOT_RECOGNIZED_MACHINE, Status.BAD_REQUEST);
     }
 
-    public static Response welcomeMyBelovedLeader() {
-        return new Response(ResponseEnum.WELCOME_MY_BELOVED_LEADER, Status.OK);
-    }
-
     public static Response commandExecutingOk() {
         return new Response(ResponseEnum.COMMAND_EXECUTING_OK, Status.OK);
-    }
-
-    public static Response commandExecutingError() {
-        return new Response(ResponseEnum.COMMAND_EXECUTING_ERROR, Status.OK);
     }
 
     public Map<String, String> getHeaders() {

@@ -1,7 +1,6 @@
 package bully.domain.model.cluster;
 
 
-import bully.domain.model.comunication.Responses;
 import bully.domain.model.electoral.Context;
 import bully.domain.model.machine.Candidate;
 import bully.domain.model.machine.Leader;
@@ -13,8 +12,6 @@ import bully.domain.service.language.BelovedLeader;
 import bully.domain.service.language.MyScore;
 
 import java.util.Optional;
-
-import static bully.domain.service.language.From.from;
 
 public class Cluster {
 

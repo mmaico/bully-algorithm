@@ -50,7 +50,7 @@ public class Machine {
         this.id = UUID.randomUUID().toString();
         this.ip = NetworkAddress.getIp();
         this.port = port;
-        this.score = ThreadLocalRandom.current().nextInt(1, 20);
+        this.score = ThreadLocalRandom.current().nextInt(1, 1000);
         this.alias = alias;
         this.context = context;
         this.timer = new Timer();
@@ -65,11 +65,11 @@ public class Machine {
     }
 
     public void startProcess() {
-        System.out.println("++++++++++++++ Started: " + this.alias + " id: " + this.id + " score: " + this.score);
         if (!isAlive) {
             System.out.println("++++++++++++++ I'm Dead: " + this.alias + " id: " + this.id + " score: " + this.score);
             return;
         }
+        System.out.println("++++++++++++++ Started: " + this.alias + " id: " + this.id + " score: " + this.score);
         final ElectoralZone electoralZone = this.context.getElectoralZone();
         final Cluster cluster = this.context.getCluster();
 
@@ -129,7 +129,7 @@ public class Machine {
 
     public static Machine create(int port, String alias) {
         Machine machine = new Machine(port, alias, null);
-        new Context(port, alias, machine);
+        new Context(port, machine);
         return machine;
     }
 }

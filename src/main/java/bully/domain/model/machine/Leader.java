@@ -3,8 +3,6 @@ package bully.domain.model.machine;
 
 import bully.infrastructure.repository.MachineRepositoryTCPImpl;
 
-import java.util.HashSet;
-
 public class Leader extends Machine {
 
     private final MachineRepository repository;
@@ -27,7 +25,7 @@ public class Leader extends Machine {
     }
 
     public static Leader dead() {
-        return new Leader("","", 0, 0, "");
+        return new Leader("", "", 0, 0, "");
     }
 
 
